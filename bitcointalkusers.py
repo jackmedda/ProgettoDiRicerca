@@ -1,5 +1,6 @@
 from urllib.request import urlopen, Request
 from lxml import etree
+from bitcoinaddressvalidator import check_bc
 
 def main():
     url = "https://bitcointalk.org/index.php?action=profile;u=60001"
