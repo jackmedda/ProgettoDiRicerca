@@ -2,20 +2,28 @@ from urllib.request import urlopen, Request
 from lxml import etree
 from bitcoinaddressvalidator import check_bc
 from time import sleep
+from json import dump, load
+
+FIRST_BITCOINTALK_USER = 1
+LAST_BITCOINTALK_USER_21_03_2019_17_00_00 = 2566477
 
 
 def main():
     url = "https://bitcointalk.org/index.php?action=profile;u="
 
-    filepath = "BitcoinTalkScrapingResult.txt"
-    with open(filepath, "w") as txt:
-        for u in range(4, 100):#2562718):
-            sleep(1)
+    filepath = "BitcoinTalkUsers.json"
+    users, startuser = loaddata(filepath)
+    with open(filepath, "w+") as jsonfile:
+        for u in range(startuser, LAST_BITCOINTALK_USER_21_03_2019_17_00_00):
             html = getHTML(url + str(u))
             page = etree.HTML(html)
 
             if not isemptypage(page):
-                txt.write(str(u) + ' ' + getfeatures(page) + '\n')
+                users[str(u)] = getfeatures(page)
+                jsonfile.seek(0, 0)
+                dump(users, jsonfile, indent=4)
+
+            sleep(1)
 
 
 def isemptypage(page):
@@ -24,7 +32,7 @@ def isemptypage(page):
 
 
 def getfeatures(page):
-    result = ''
+    result = {}
     for b in page.iter('b'):
         if b.text in ('Bitcoin address: ', 'Name: ', 'Location:', 'Signature:'):
             if b.text == "Signature:":
@@ -33,16 +41,11 @@ def getfeatures(page):
                 td = b.getparent().getnext()
             if td is not None:
                 if td.text is not None:
-                    #if b.text == 'Bitcoin address: ':
-                        #if check_bc(td.text):
-                            #print(b.text + td.text)
-                    #else:
-                        if b.text in ('Location:', 'Signature:'):
-                            print(b.text + ' ' + td.text)
-                        else:
-                            print(b.text + td.text)
-                else:
-                    print(b.text)
+                    # if b.text == 'Bitcoin address: ':
+                        # if check_bc(td.text):
+                            # print(b.text + td.text)
+                    # else:
+                        result[b.text.split(':')[0]] = td.text
 
     return result
 
@@ -56,6 +59,22 @@ def getHTML(url):
     resource.close()
 
     return content
+
+
+def loaddata(filepath):
+    jsonfile = open(filepath, 'r')
+    users = {}
+    try:
+        # Loads the json file and takes last key of the loaded dictionary
+        users = load(jsonfile)
+        startuser = int(list(users.keys())[-1])
+        print(startuser)
+    except:
+        startuser = FIRST_BITCOINTALK_USER
+
+    jsonfile.close()
+
+    return users, startuser
 
 
 if __name__ == "__main__":

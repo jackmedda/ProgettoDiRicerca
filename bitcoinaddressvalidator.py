@@ -16,9 +16,3 @@ def check_bc(bc):
         return bcbytes[-4:] == sha256(sha256(bcbytes[:-4]).digest()).digest()[:4]
     except Exception:
         return False
-
-
-print(check_bc('1AGNa15ZQXAZUgFiqJ3i7Z2DPU2J6hW62i'))
-print(check_bc("17NdbrSGoUotzeGCcMMCqnFkEvLymoou9j"))
-print(check_bc("35rJhooPPu5VGBMJjpjfPCiTjHuVkajAxc"))
-print(check_bc("bc1qjl8uwezzlech723lpnyuza0h2cdkvxvh54v3dn"))
