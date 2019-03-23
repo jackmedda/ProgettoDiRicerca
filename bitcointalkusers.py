@@ -7,21 +7,25 @@ from json import dump, load
 FIRST_BITCOINTALK_USER = 1
 LAST_BITCOINTALK_USER_21_03_2019_17_00_00 = 2566477
 
-
+# [^\w][13][[\w&&[^0OlI]]] Provare regex per recuperare in real time gli indirizzi
 def main():
     url = "https://bitcointalk.org/index.php?action=profile;u="
 
     filepath = "BitcoinTalkUsers.json"
     users, startuser = loaddata(filepath)
     with open(filepath, "w+") as jsonfile:
+        if users:
+            dump(users, jsonfile, indent=4)
         for u in range(startuser, LAST_BITCOINTALK_USER_21_03_2019_17_00_00):
-            html = getHTML(url + str(u))
+            html = gethtml(url + str(u))
             page = etree.HTML(html)
 
             if not isemptypage(page):
-                users[str(u)] = getfeatures(page)
-                jsonfile.seek(0, 0)
-                dump(users, jsonfile, indent=4)
+                result = getfeatures(page)
+                if result:
+                    users[str(u)] = result
+                    jsonfile.seek(0, 0)
+                    dump(users, jsonfile, indent=4)
 
             sleep(1)
 
@@ -40,19 +44,23 @@ def getfeatures(page):
             else:
                 td = b.getparent().getnext()
             if td is not None:
-                if td.text is not None:
+                if td.text:
                     # if b.text == 'Bitcoin address: ':
                         # if check_bc(td.text):
                             # print(b.text + td.text)
                     # else:
                         result[b.text.split(':')[0]] = td.text
 
-    return result
+    if 'Bitcoin address' not in result and 'Signature' not in result:
+        return None
+    else:
+        return result
 
 
-def getHTML(url):
+def gethtml(url):
     req = Request(url=url, headers={
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36'})
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
+                      'Chrome/70.0.3538.77 Safari/537.36'})
     resource = urlopen(req)
 
     content = resource.read().decode(resource.headers.get_content_charset())
@@ -62,17 +70,16 @@ def getHTML(url):
 
 
 def loaddata(filepath):
-    jsonfile = open(filepath, 'r')
     users = {}
     try:
+        jsonfile = open(filepath, 'r')
         # Loads the json file and takes last key of the loaded dictionary
         users = load(jsonfile)
-        startuser = int(list(users.keys())[-1])
+        startuser = int(list(users.keys())[-1]) + 1
         print(startuser)
-    except:
+        jsonfile.close()
+    except IOError:
         startuser = FIRST_BITCOINTALK_USER
-
-    jsonfile.close()
 
     return users, startuser
 
