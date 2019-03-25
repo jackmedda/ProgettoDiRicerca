@@ -7,12 +7,12 @@ from json import dump, load
 FIRST_BITCOINTALK_USER = 1
 LAST_BITCOINTALK_USER_21_03_2019_17_00_00 = 2566477
 
-# [^\w][13][[\w&&[^0OlI]]] Provare regex per recuperare in real time gli indirizzi
+
 def main():
     url = "https://bitcointalk.org/index.php?action=profile;u="
 
     filepath = "BitcoinTalkUsers.json"
-    users, startuser = loaddata(filepath)
+    users, startuser = load_data(filepath)
     with open(filepath, "w+") as jsonfile:
         if users:
             dump(users, jsonfile, indent=4)
@@ -30,11 +30,6 @@ def main():
             sleep(1)
 
 
-def isemptypage(page):
-    emptyuser = page.find("body//tr[@class='titlebg']/td")
-    return emptyuser is not None and emptyuser.text == "An Error Has Occurred!"
-
-
 def getfeatures(page):
     result = {}
     for b in page.iter('b'):
@@ -45,11 +40,8 @@ def getfeatures(page):
                 td = b.getparent().getnext()
             if td is not None:
                 if td.text:
-                    # if b.text == 'Bitcoin address: ':
-                        # if check_bc(td.text):
-                            # print(b.text + td.text)
-                    # else:
-                        result[b.text.split(':')[0]] = td.text
+
+                    result[b.text.split(':')[0]] = td.text
 
     if 'Bitcoin address' not in result and 'Signature' not in result:
         return None
@@ -69,7 +61,12 @@ def gethtml(url):
     return content
 
 
-def loaddata(filepath):
+def isemptypage(page):
+    emptyuser = page.find("body//tr[@class='titlebg']/td")
+    return emptyuser is not None and emptyuser.text == "An Error Has Occurred!"
+
+
+def load_data(filepath):
     users = {}
     try:
         jsonfile = open(filepath, 'r')
