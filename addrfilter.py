@@ -10,7 +10,7 @@ __all__ = [
 _BITCOIN_REGEX = r'(?<=\W)[13][1-9A-HJ-NP-Za-km-z]{25,34}'
 _BITCOIN_BECH32_REGEX = r'(?<=\W)bc1[02-9ac-hj-np-z]{6,87}'
 _ETHEREUM_REGEX = r'(?<=\W)0x[0-9a-fA-F]{40}'
-_BITCOIN_CASH_REGEX = r'(?<=\W)'
+_BITCOIN_CASH_REGEX = r'(?<=\W)[02-9ac-hj-np-z]{41,111}'  # Legacy addresses are the same as Bitcoin
 _LITECOIN_REGEX = r'(?<=\W)'
 _DOGECOIN_REGEX = r'(?<=\W)'
 _DASH_REGEX = r'(?<=\W)'
@@ -90,7 +90,7 @@ str5 = "Philips norelco 1280cc combining gyroflex 3d, ultratrack heads and sking
 
 str6 = "3139" # NO
 
-str7 = "plus size 0xCd2a3d9f938e13Cd947eC05ABC7fe734df8DD826 black bc1qwqdg6squsna38e46795at95yu9atm8azzmyvckulcc7kytlcckxswvvzej dresses (http://www.swakdesigns.com/c-134-black-dresses.aspx) -1H6wM8Xj8GNrhqWBrnDugd8Vf3nAfZgMnq"
+str7 = "plus bitcoincash:qnq8zwpj8cq05n7pytfmskuk9r4gzzel8qtsvwz79zdskftrzxtar994cgutavfklv39gr3uvz size 0xCd2a3d9f938e13Cd947eC05ABC7fe734df8DD826 black bc1qwqdg6squsna38e46795at95yu9atm8azzmyvckulcc7kytlcckxswvvzej dresses (http://www.swakdesigns.com/c-134-black-dresses.aspx) -1H6wM8Xj8GNrhqWBrnDugd8Vf3nAfZgMnq"
 
 strings = (str1, str2, str3, str4, str5, str6, str7)
 
