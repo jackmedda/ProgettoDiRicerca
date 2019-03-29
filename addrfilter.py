@@ -10,14 +10,14 @@ __all__ = [
 _BITCOIN_REGEX = r'(?<=\W)[13][1-9A-HJ-NP-Za-km-z]{25,34}'
 _BITCOIN_BECH32_REGEX = r'(?<=\W)bc1[02-9ac-hj-np-z]{6,87}'
 _ETHEREUM_REGEX = r'(?<=\W)0x[0-9a-fA-F]{40}'
-_BITCOIN_CASH_REGEX = r'(?<=\W)([02-9ac-hj-np-z]{41,111}|[02-9AC-HJ-NP-Z]{41,111})'  # Legacy addresses are the same as Bitcoin, Lower case is preferred for cashaddr, but uppercase is accepted. A mixture of lower case and uppercase must be rejected.
+_BITCOIN_CASH_REGEX = r'(?<=\W)([qp][02-9ac-hj-np-z]{60,104}|[qp][02-9AC-HJ-NP-Z]{60,104})'  # Legacy addresses are the same as Bitcoin, Lower case is preferred for cashaddr, but uppercase is accepted. A mixture of lower case and uppercase must be rejected.
 _LITECOIN_REGEX = r'(?<=\W)[ML][1-9A-HJ-NP-Za-km-z]{25,34}'
 _LITECOIN_BECH32_REGEX = r'(?<=\W)ltc1[02-9ac-hj-np-z]{6,86}'
-_DOGECOIN_REGEX = r'(?<=\W)D[1-9A-HJ-NP-Za-km-z]{25,34}'  # Dogecoin addresses are the same as DeepOnion addresses
-_DASH_REGEX = r'(?<=\W)'
-_BITCOIN_SV_REGEX = r'(?<=\W)'
-_BINANCE_COIN_REGEX = r'(?<=\W)'
-_MAKER_REGEX = r'(?<=\W)'
+_DOGECOIN_REGEX = r'(?<=\W)D[1-9A-HJ-NP-Za-km-z]{25,34}'  # Dogecoin addresses regex is the same as DeepOnion addresses regex
+_DASH_REGEX = r'(?<=\W)X[1-9A-HJ-NP-Za-km-z]{25,34}'
+_BITCOIN_SV_REGEX = r'(?<=\W)([qp][02-9ac-hj-np-z]{60,104}|[qp][02-9AC-HJ-NP-Z]{60,104})'  # equal to Bitcoin Cash
+_BINANCE_COIN_REGEX = r'(?<=\W)0x[0-9a-fA-F]{40}'  #same as Ethereum address
+_MAKER_REGEX = r'(?<=\W)0x[0-9a-fA-F]{40}'  # same as Ethereum address
 
 res = [
     ([re.compile(_BITCOIN_REGEX), re.compile(_BITCOIN_BECH32_REGEX)], "Bitcoin address"),
@@ -91,12 +91,13 @@ str5 = "Philips norelco 1280cc combining gyroflex 3d, ultratrack heads and sking
 
 str6 = "3139" # NO
 
-str7 = "plus bitcoincash:qnq8zwpj8cq05n7pytfmskuk9r4gzzel8qtsvwz79zdskftrzxtar994cgutavfklv39gr3uvz size 0xCd2a3d9f938e13Cd947eC05ABC7fe734df8DD826 black bc1qwqdg6squsna38e46795at95yu9atm8azzmyvckulcc7kytlcckxswvvzej dresses (http://www.swakdesigns.com/c-134-black-dresses.aspx) -1H6wM8Xj8GNrhqWBrnDugd8Vf3nAfZgMnq"
+str7 = "plus bitcoincash:qnq8zwpj8cq05n7pytfmskuk9r4gzzel8qtsvwz79zdskftrzxtar994cgutavfklv39gr3uvz size 0xCd2a3d9f938e13Cd947eC05ABC7fe734df8DD826 black bc1qwqdg6squsna38e46795at95yu9atm8azzmyvckulcc7kytlcckxswvvzej dresses XuWVnHF9xXX9mnyi9snH3hSAZxhXGBMiqm (http://www.swakdesigns.com/c-134-black-dresses.aspx) -1H6wM8Xj8GNrhqWBrnDugd8Vf3nAfZgMnq"
 
 strings = (str1, str2, str3, str4, str5, str6, str7)
 
-#findalladdresses(str7)
+findalladdresses(str7)
 #findaddressesbytype(str7, _Address.BITCOIN)
 
 #findaddressesbytype(str3, _Address.ETHEREUM)
-findalladdresses(open('BitcoinTalkUsers.json', 'r').read())
+#findalladdresses(open('BitcoinTalkUsers.json', 'r').read())
+print(len("qnq8zwpj8cq05n7pytfmskuk9r4gzzel8qtsvwz79zdskftrzxtar994cgutavfklv39gr3uvz"))

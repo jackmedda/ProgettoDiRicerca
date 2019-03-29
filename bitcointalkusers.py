@@ -32,24 +32,43 @@ def main():
 
 def getfeatures(page):
     result = {}
+    b_toskip = [
+        'Guest', 'News', 'Posts: ', 'Activity:', 'Position: ', 'Date Registered: ',
+        'Last Active: ', 'Current Status: ', 'Gender: ', 'Age:', 'Local Time:'
+    ]
     for b in page.iter('b'):
-        if b.text in ('Bitcoin address: ', 'Name: ', 'Location:', 'Signature:'):
-            if b.text == "Signature:":
+        if b.text is not None and b.text not in b_toskip:
+            if b.text == "Email: ":
+                email = b.getparent().getnext().getchildren()[0].text
+                if email != "hidden":
+                    result["Email"] = email
+            elif b.text == "Signature:":
+                attributes = []
                 td = b.getparent().getparent().getnext().find('td/div')
+
+                # Get all possible information in children tags
+                for child in td.getchildren():
+                    attributes.extend(child.values())
+                    attributes.append(child.text)
+
+                # Filters 'None' elements from attributes
+                result["Signature"] = list(filter(None.__ne__, attributes))
             else:
                 td = b.getparent().getnext()
-            if td is not None:
-                if td.text:
+                if td is not None:  # just td raise a FutureWarning, leave td is not None
+                    if td.text:
+                        result[b.text.split(':')[0]] = td.text
 
-                    result[b.text.split(':')[0]] = td.text
+    return result
 
-    if 'Bitcoin address' not in result and 'Signature' not in result:
-        return None
-    else:
-        return result
+
+def getuserfeature(user):
+    url = "https://bitcointalk.org/index.php?action=profile;u="
+    return getfeatures(etree.HTML(gethtml(url + str(user))))
 
 
 def gethtml(url):
+    #  Bitcoin Talk wants User-Agent to work properly
     req = Request(url=url, headers={
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
                       'Chrome/70.0.3538.77 Safari/537.36'})
