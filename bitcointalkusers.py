@@ -3,6 +3,7 @@ from lxml import etree
 from bitcoinaddressvalidator import check_bc
 from time import sleep
 from json import dump, load
+from addrfilter import findalladdresses
 
 FIRST_BITCOINTALK_USER = 1
 LAST_BITCOINTALK_USER_21_03_2019_17_00_00 = 2566477
@@ -22,6 +23,7 @@ def main():
 
             if not isemptypage(page):
                 result = getfeatures(page)
+                result.update(tupleset_to_dict(findalladdresses(result)))
                 if result:
                     users[str(u)] = result
                     jsonfile.seek(0, 0)
@@ -31,7 +33,15 @@ def main():
 
 
 def getfeatures(page):
+    '''
+    The getfeatures method takes the lxml ElementTree root of the web page and extract useful information from it.
+    Here it is necessary to insert the implementation to extract all data from the web page.
+
+    :param page: the page need to be analysed to extract useful information
+    :return: an associative array containing the information that is useful for a particular purpose
+    '''
     result = {}
+    # <b> tags to not consider
     b_toskip = [
         'Guest', 'News', 'Posts: ', 'Activity:', 'Position: ', 'Date Registered: ',
         'Last Active: ', 'Current Status: ', 'Gender: ', 'Age:', 'Local Time:'
@@ -99,6 +109,12 @@ def load_data(filepath):
 
     return users, startuser
 
+
+def tupleset_to_dict(addresses):
+    result = {}
+    for x in addresses:
+        result[x[0]] = x[1]
+    return result
 
 if __name__ == "__main__":
     main()
