@@ -19,7 +19,7 @@ _DASH_REGEX = r'(?<=\W)X[1-9A-HJ-NP-Za-km-z]{25,34}'
 _BITCOIN_SV_REGEX = r'(?<=\W)([qp][02-9ac-hj-np-z]{60,104}|[qp][02-9AC-HJ-NP-Z]{60,104})'  # equal to Bitcoin Cash
 _BINANCE_COIN_REGEX = r'(?<=\W)0x[0-9a-fA-F]{40}'  #same as Ethereum address
 _MAKER_REGEX = r'(?<=\W)0x[0-9a-fA-F]{40}'  # same as Ethereum address
-_MONERO_REGEX = r''
+_MONERO_REGEX = r'(?<=\W)'
 _EOS_REGEX = r'(?<=\W)0x[0-9a-fA-F]{40}'  # same as Ethereum address
 
 res = [
