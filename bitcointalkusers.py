@@ -23,8 +23,12 @@ def main():
 
             if not isemptypage(page):
                 result = getfeatures(page)
-                result.update(tupleset_to_dict(findalladdresses(result)))
-                if result:
+                # join concatenate all strings of the values of the dictionary 'result'
+                addresses = tupleset_to_dict(findalladdresses(' '.join(result.values())))
+                print(addresses)
+                if result and addresses:
+                    result.update(addresses)
+                    print(result)
                     users[str(u)] = result
                     jsonfile.seek(0, 0)
                     dump(users, jsonfile, indent=4)
@@ -62,7 +66,14 @@ def getfeatures(page):
                     attributes.append(child.text)
 
                 # Filters 'None' elements from attributes
-                result["Signature"] = list(filter(None.__ne__, attributes))
+                if attributes:
+                    # Signature as a long string with each useful value separated by a comma
+                    result["Signature"] = ', '.join(list(item for item in attributes if item and item != 'ul'))
+            elif b.text == "Website: ":
+                td = b.getparent().getnext().getchildren()[0]
+                website = td.values()[0]
+                if website:  # if href contains something
+                    result["Website"] = td.text + " " + website
             else:
                 td = b.getparent().getnext()
                 if td is not None:  # just td raise a FutureWarning, leave td is not None
@@ -115,6 +126,7 @@ def tupleset_to_dict(addresses):
     for x in addresses:
         result[x[0]] = x[1]
     return result
+
 
 if __name__ == "__main__":
     main()

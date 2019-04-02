@@ -4,7 +4,8 @@ from enum import Enum
 
 __all__ = [
     "BITCOIN", "ETHEREUM", "BITCOIN_CASH", "LITECOIN",
-    "DOGECOIN", "DASH", "BITCOIN_SV", "BINANCE_COIN", "MAKER"
+    "DOGECOIN", "DASH", "BITCOIN_SV", "BINANCE_COIN", "MAKER",
+    "MONERO", "EOS"
 ]
 
 _BITCOIN_REGEX = r'(?<=\W)[13][1-9A-HJ-NP-Za-km-z]{25,34}'
@@ -18,6 +19,8 @@ _DASH_REGEX = r'(?<=\W)X[1-9A-HJ-NP-Za-km-z]{25,34}'
 _BITCOIN_SV_REGEX = r'(?<=\W)([qp][02-9ac-hj-np-z]{60,104}|[qp][02-9AC-HJ-NP-Z]{60,104})'  # equal to Bitcoin Cash
 _BINANCE_COIN_REGEX = r'(?<=\W)0x[0-9a-fA-F]{40}'  #same as Ethereum address
 _MAKER_REGEX = r'(?<=\W)0x[0-9a-fA-F]{40}'  # same as Ethereum address
+_MONERO_REGEX = r''
+_EOS_REGEX = r'(?<=\W)0x[0-9a-fA-F]{40}'  # same as Ethereum address
 
 res = [
     ([re.compile(_BITCOIN_REGEX), re.compile(_BITCOIN_BECH32_REGEX)], "Bitcoin address"),
@@ -28,7 +31,9 @@ res = [
     (re.compile(_DASH_REGEX), "Dash address"),
     (re.compile(_BITCOIN_SV_REGEX), "BitcoinSV address"),
     (re.compile(_BINANCE_COIN_REGEX), "BinanceCoin address"),
-    (re.compile(_MAKER_REGEX), "Maker address")
+    (re.compile(_MAKER_REGEX), "Maker address"),
+    (re.compile(_MONERO_REGEX), "Monero address"),
+    (re.compile(_EOS_REGEX), "EOS address")
 ]
 
 
@@ -49,7 +54,6 @@ globals().update(_Address.__members__)
 def findaddressesbytype(s, address_type):
     regex = res[address_type.value]
 
-    print(extractaddress(regex, s))
     return extractaddress(regex, s)
 
 
@@ -58,7 +62,6 @@ def findalladdresses(s):
     for regex in res:
         useraddrs.update(extractaddress(regex, s))
 
-    print(useraddrs)
     return useraddrs
 
 
@@ -95,9 +98,8 @@ str7 = "plus bitcoincash:qnq8zwpj8cq05n7pytfmskuk9r4gzzel8qtsvwz79zdskftrzxtar99
 
 strings = (str1, str2, str3, str4, str5, str6, str7)
 
-findalladdresses(str7)
+#findalladdresses(str7)
 #findaddressesbytype(str7, _Address.BITCOIN)
 
 #findaddressesbytype(str3, _Address.ETHEREUM)
 #findalladdresses(open('BitcoinTalkUsers.json', 'r').read())
-print(len("qnq8zwpj8cq05n7pytfmskuk9r4gzzel8qtsvwz79zdskftrzxtar994cgutavfklv39gr3uvz"))
