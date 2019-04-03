@@ -11,19 +11,19 @@ __all__ = [
     "MONERO", "EOS"
 ]
 
-_BITCOIN_REGEX = r'(?<=\W)[13][1-9A-HJ-NP-Za-km-z]{25,34}'
-_BITCOIN_BECH32_REGEX = r'(?<=\W)bc1[02-9ac-hj-np-z]{6,87}'
-_ETHEREUM_REGEX = r'(?<=\W)0x[0-9a-fA-F]{40}'
-_BITCOIN_CASH_REGEX = r'(?<=\W)([qp][02-9ac-hj-np-z]{60,104}|[qp][02-9AC-HJ-NP-Z]{60,104})'  # Legacy addresses are the same as Bitcoin, Lower case is preferred for cashaddr, but uppercase is accepted. A mixture of lower case and uppercase must be rejected.
-_LITECOIN_REGEX = r'(?<=\W)[ML][1-9A-HJ-NP-Za-km-z]{25,34}'
-_LITECOIN_BECH32_REGEX = r'(?<=\W)ltc1[02-9ac-hj-np-z]{6,86}'
-_DOGECOIN_REGEX = r'(?<=\W)D[1-9A-HJ-NP-Za-km-z]{25,34}'  # Dogecoin addresses regex is the same as DeepOnion addresses regex
-_DASH_REGEX = r'(?<=\W)X[1-9A-HJ-NP-Za-km-z]{25,34}'
-_BITCOIN_SV_REGEX = r'(?<=\W)([qp][02-9ac-hj-np-z]{60,104}|[qp][02-9AC-HJ-NP-Z]{60,104})'  # equal to Bitcoin Cash
-_BINANCE_COIN_REGEX = r'(?<=\W)0x[0-9a-fA-F]{40}'  # same as Ethereum address
-_MAKER_REGEX = r'(?<=\W)0x[0-9a-fA-F]{40}'  # same as Ethereum address
-_MONERO_REGEX = r'(?<=\W)'
-_EOS_REGEX = r'(?<=\W)0x[0-9a-fA-F]{40}'  # same as Ethereum address
+_BITCOIN_REGEX = r'(?<=\b)[13][1-9A-HJ-NP-Za-km-z]{25,34}'
+_BITCOIN_BECH32_REGEX = r'(?<=\b)bc1[02-9ac-hj-np-z]{6,87}'
+_ETHEREUM_REGEX = r'(?<=\b)0x[0-9a-fA-F]{40}'
+_BITCOIN_CASH_REGEX = r'(?<=\b)([qp][02-9ac-hj-np-z]{60,104}|[qp][02-9AC-HJ-NP-Z]{60,104})'  # Legacy addresses are the same as Bitcoin, Lower case is preferred for cashaddr, but uppercase is accepted. A mixture of lower case and uppercase must be rejected.
+_LITECOIN_REGEX = r'(?<=\b)[ML][1-9A-HJ-NP-Za-km-z]{25,34}'
+_LITECOIN_BECH32_REGEX = r'(?<=\b)ltc1[02-9ac-hj-np-z]{6,86}'
+_DOGECOIN_REGEX = r'(?<=\b)D[1-9A-HJ-NP-Za-km-z]{25,34}'  # Dogecoin addresses regex is the same as DeepOnion addresses regex
+_DASH_REGEX = r'(?<=\b)X[1-9A-HJ-NP-Za-km-z]{25,34}'
+_BITCOIN_SV_REGEX = r'(?<=\b)([qp][02-9ac-hj-np-z]{60,104}|[qp][02-9AC-HJ-NP-Z]{60,104})'  # equal to Bitcoin Cash
+_BINANCE_COIN_REGEX = r'(?<=\b)0x[0-9a-fA-F]{40}'  # same as Ethereum address
+_MAKER_REGEX = r'(?<=\b)0x[0-9a-fA-F]{40}'  # same as Ethereum address
+_MONERO_REGEX = r'(?<=\b)'
+_EOS_REGEX = r'(?<=\b)0x[0-9a-fA-F]{40}'  # same as Ethereum address
 
 res = [
     ([re.compile(_BITCOIN_REGEX), re.compile(_BITCOIN_BECH32_REGEX)], "Bitcoin address"),
@@ -35,7 +35,7 @@ res = [
     (re.compile(_BITCOIN_SV_REGEX), "BitcoinSV address"),
     (re.compile(_BINANCE_COIN_REGEX), "BinanceCoin address"),
     (re.compile(_MAKER_REGEX), "Maker address"),
-    (re.compile(_MONERO_REGEX), "Monero address"),
+    # (re.compile(_MONERO_REGEX), "Monero address"),
     (re.compile(_EOS_REGEX), "EOS address")
 ]
 
@@ -87,15 +87,18 @@ def extractaddress(s, regex, validator):
             newuseraddrs.add((regex[1], addr))
 
     # Check if the addresses are valid with respective validators
-    for addr in newuseraddrs:
-        if type(regex[0]) == list:
-            for r, v in zip_longest(regex[0], validator):
-                if r.match(addr):
-                    if not v(addr):
-                        newuseraddrs.remove((regex[1], addr))
-        else:
-            if not validator(addr):
-                newuseraddrs.remove((regex[1], addr))
+    if validator:
+        _newuseraddrs = newuseraddrs.copy()
+        for addr in _newuseraddrs:
+            addr = addr[1]
+            if type(regex[0]) == list:
+                for r, v in zip_longest(regex[0], validator):
+                    if r.match(addr):
+                        if not v(addr):
+                            newuseraddrs.remove((regex[1], addr))
+            else:
+                if not validator(addr):
+                    newuseraddrs.remove((regex[1], addr))
 
     return newuseraddrs
 

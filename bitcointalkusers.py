@@ -20,7 +20,6 @@ def main():
         for u in range(startuser, LAST_BITCOINTALK_USER_21_03_2019_17_00_00):
             html = gethtml(url + str(u))
             page = etree.HTML(html)
-            print(u)
 
             if not isemptypage(page):
                 result = getfeatures(page)
@@ -109,12 +108,13 @@ def isemptypage(page):
 
 def load_data(filepath):
     users = {}
+    startuser = 0
     try:
         jsonfile = open(filepath, 'r')
         # Loads the json file and takes last key of the loaded dictionary
-        users = load(jsonfile)
-        startuser = int(list(users.keys())[-1]) + 1
-        print(startuser)
+        if not jsonfile:
+            users = load(jsonfile)
+            startuser = int(list(users.keys())[-1]) + 1
         jsonfile.close()
     except IOError:
         startuser = FIRST_BITCOINTALK_USER
