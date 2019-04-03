@@ -20,12 +20,13 @@ def main():
         for u in range(startuser, LAST_BITCOINTALK_USER_21_03_2019_17_00_00):
             html = gethtml(url + str(u))
             page = etree.HTML(html)
+            print(u)
 
             if not isemptypage(page):
                 result = getfeatures(page)
                 # join concatenate all strings of the values of the dictionary 'result'
                 addresses = tupleset_to_dict(findalladdresses(' '.join(result.values())))
-                print(addresses)
+                # Users with no addresses are not useful
                 if result and addresses:
                     result.update(addresses)
                     print(result)
@@ -73,7 +74,7 @@ def getfeatures(page):
                 td = b.getparent().getnext().getchildren()[0]
                 website = td.values()[0]
                 if website:  # if href contains something
-                    result["Website"] = td.text + " " + website
+                    result["Website"] = (td.text if td.text else "") + " " + website
             else:
                 td = b.getparent().getnext()
                 if td is not None:  # just td raise a FutureWarning, leave td is not None

@@ -1,5 +1,8 @@
 import re
 from enum import Enum
+from itertools import zip_longest
+from bitcoinaddressvalidator import check_bc
+from bitcoinbech32addressvalidator import bech32_verify_checksum
 
 
 __all__ = [
@@ -17,7 +20,7 @@ _LITECOIN_BECH32_REGEX = r'(?<=\W)ltc1[02-9ac-hj-np-z]{6,86}'
 _DOGECOIN_REGEX = r'(?<=\W)D[1-9A-HJ-NP-Za-km-z]{25,34}'  # Dogecoin addresses regex is the same as DeepOnion addresses regex
 _DASH_REGEX = r'(?<=\W)X[1-9A-HJ-NP-Za-km-z]{25,34}'
 _BITCOIN_SV_REGEX = r'(?<=\W)([qp][02-9ac-hj-np-z]{60,104}|[qp][02-9AC-HJ-NP-Z]{60,104})'  # equal to Bitcoin Cash
-_BINANCE_COIN_REGEX = r'(?<=\W)0x[0-9a-fA-F]{40}'  #same as Ethereum address
+_BINANCE_COIN_REGEX = r'(?<=\W)0x[0-9a-fA-F]{40}'  # same as Ethereum address
 _MAKER_REGEX = r'(?<=\W)0x[0-9a-fA-F]{40}'  # same as Ethereum address
 _MONERO_REGEX = r'(?<=\W)'
 _EOS_REGEX = r'(?<=\W)0x[0-9a-fA-F]{40}'  # same as Ethereum address
@@ -36,6 +39,10 @@ res = [
     (re.compile(_EOS_REGEX), "EOS address")
 ]
 
+validators = [
+    [check_bc, bech32_verify_checksum]
+]
+
 
 class _Address(Enum):
     BITCOIN = 0
@@ -47,26 +54,26 @@ class _Address(Enum):
     BITCOIN_SV = 6
     BINANCE_COIN = 7
     MAKER = 8
-
 globals().update(_Address.__members__)
 
 
 def findaddressesbytype(s, address_type):
     regex = res[address_type.value]
+    validator = validators[address_type.value]
 
-    return extractaddress(regex, s)
+    return extractaddress(s, regex, validator)
 
 
 def findalladdresses(s):
     useraddrs = set()
-    for regex in res:
-        useraddrs.update(extractaddress(regex, s))
+    for regex, validator in zip_longest(res, validators):
+        useraddrs.update(extractaddress(s, regex, validator))
 
     return useraddrs
 
 
-def extractaddress(regex, s):
-    useraddrs = set()
+def extractaddress(s, regex, validator):
+    newuseraddrs = set()
     addrs = []
 
     if type(regex[0]) == list:
@@ -77,8 +84,20 @@ def extractaddress(regex, s):
 
     for addr in addrs:
         if addr:
-            useraddrs.add((regex[1], addr))
-    return useraddrs
+            newuseraddrs.add((regex[1], addr))
+
+    # Check if the addresses are valid with respective validators
+    for addr in newuseraddrs:
+        if type(regex[0]) == list:
+            for r, v in zip_longest(regex[0], validator):
+                if r.match(addr):
+                    if not v(addr):
+                        newuseraddrs.remove((regex[1], addr))
+        else:
+            if not validator(addr):
+                newuseraddrs.remove((regex[1], addr))
+
+    return newuseraddrs
 
 # TEST
 
