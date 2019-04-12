@@ -22,7 +22,7 @@ _DASH_REGEX = r'(?<=\b)X[1-9A-HJ-NP-Za-km-z]{25,34}'
 _BITCOIN_SV_REGEX = r'(?<=\b)([qp][02-9ac-hj-np-z]{60,104}|[qp][02-9AC-HJ-NP-Z]{60,104})'  # equal to Bitcoin Cash
 _BINANCE_COIN_REGEX = r'(?<=\b)0x[0-9a-fA-F]{40}'  # same as Ethereum address
 _MAKER_REGEX = r'(?<=\b)0x[0-9a-fA-F]{40}'  # same as Ethereum address
-_MONERO_REGEX = r'(?<=\b)'
+_MONERO_REGEX = r'(?<=\b)4[1-9A-HJ-NP-Za-km-z]{94}'
 _EOS_REGEX = r'(?<=\b)0x[0-9a-fA-F]{40}'  # same as Ethereum address
 
 res = [
@@ -35,7 +35,7 @@ res = [
     (re.compile(_BITCOIN_SV_REGEX), "BitcoinSV address"),
     (re.compile(_BINANCE_COIN_REGEX), "BinanceCoin address"),
     (re.compile(_MAKER_REGEX), "Maker address"),
-    # (re.compile(_MONERO_REGEX), "Monero address"),
+    (re.compile(_MONERO_REGEX), "Monero address"),
     (re.compile(_EOS_REGEX), "EOS address")
 ]
 
