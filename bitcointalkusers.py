@@ -14,26 +14,61 @@ def main():
 
     filepath = "BitcoinTalkUsers.json"
     users, startuser = load_data(filepath)
+
     with open(filepath, "w+") as jsonfile:
         if users:
             dump(users, jsonfile, indent=4)
         for u in range(startuser, LAST_BITCOINTALK_USER_21_03_2019_17_00_00):
-            html = gethtml(url + str(u))
-            page = etree.HTML(html)
+            datatojson(url, jsonfile, users, u)
 
-            if not isemptypage(page):
-                result = getfeatures(page)
-                # join concatenate all strings of the values of the dictionary 'result'
-                addresses = tupleset_to_dict(findalladdresses(' '.join(result.values())))
-                # Users with no addresses are not useful
-                if result and addresses:
-                    result.update(addresses)
-                    print(result)
-                    users[str(u)] = result
-                    jsonfile.seek(0, 0)
-                    dump(users, jsonfile, indent=4)
 
-            sleep(1)
+def datatojson(url, jsonfile, users, u):
+    html = gethtml(url + str(u))
+    page = etree.HTML(html)
+
+    # This function permits to restart the program from the last checked user and not last user with some data
+    def addlastcheckeduser(data):
+        if str(u - 1) in users:
+            if not users[str(u - 1)]:
+                del users[str(u - 1)]
+        users[str(u)] = data
+        jsonfile.seek(0, 0)
+        dump(users, jsonfile, indent=4)
+
+    if not isemptypage(page):
+        result = getfeatures(page)
+        # join concatenate all strings of the values of the dictionary 'result'
+        addresses = tupleset_to_dict(findalladdresses(' '.join(result.values())))
+        # Users with no addresses are not useful
+        if result and addresses:
+            result.update(addresses)
+            # print(result)
+            addlastcheckeduser(result)
+            jsonfile.seek(0, 0)
+            dump(users, jsonfile, indent=4)
+        else:
+            addlastcheckeduser([])
+    else:
+        addlastcheckeduser([])
+
+    sleep(1)
+
+
+def finddatabyuserid(user):
+    url = "https://bitcointalk.org/index.php?action=profile;u="
+    html = gethtml(url + str(user))
+    page = etree.HTML(html)
+
+    if not isemptypage(page):
+        result = getfeatures(page)
+        print(result)
+        # join concatenate all strings of the values of the dictionary 'result'
+        addresses = tupleset_to_dict(findalladdresses(' '.join(result.values())))
+        print(addresses)
+        # Users with no addresses are not useful
+        if result and addresses:
+            result.update(addresses)
+            print(result)
 
 
 def getfeatures(page):
@@ -59,6 +94,8 @@ def getfeatures(page):
             elif b.text == "Signature:":
                 attributes = []
                 td = b.getparent().getparent().getnext().find('td/div')
+
+                attributes.append(td.text)
 
                 # Get all possible information in children tags
                 for child in td.getchildren():
@@ -112,9 +149,12 @@ def load_data(filepath):
     try:
         jsonfile = open(filepath, 'r')
         # Loads the json file and takes last key of the loaded dictionary
-        if not jsonfile:
+        if jsonfile:
             users = load(jsonfile)
             startuser = int(list(users.keys())[-1]) + 1
+            if not users[str(startuser-1)]:
+                del users[str(startuser-1)]
+
         jsonfile.close()
     except IOError:
         startuser = FIRST_BITCOINTALK_USER
