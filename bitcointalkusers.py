@@ -1,8 +1,8 @@
 from urllib.request import urlopen, Request
 from lxml import etree
-from bitcoinaddressvalidator import check_bc
 from time import sleep
 from json import dump, load
+from os import stat
 from addrfilter import findalladdresses
 
 FIRST_BITCOINTALK_USER = 1
@@ -72,13 +72,13 @@ def finddatabyuserid(user):
 
 
 def getfeatures(page):
-    '''
+    """
     The getfeatures method takes the lxml ElementTree root of the web page and extract useful information from it.
     Here it is necessary to insert the implementation to extract all data from the web page.
 
     :param page: the page need to be analysed to extract useful information
     :return: an associative array containing the information that is useful for a particular purpose
-    '''
+    """
     result = {}
     # <b> tags to not consider
     b_toskip = [
@@ -95,7 +95,8 @@ def getfeatures(page):
                 attributes = []
                 td = b.getparent().getparent().getnext().find('td/div')
 
-                attributes.append(td.text)
+                if td.text:
+                    attributes.append(td.text)
 
                 # Get all possible information in children tags
                 for child in td.getchildren():
@@ -145,19 +146,20 @@ def isemptypage(page):
 
 def load_data(filepath):
     users = {}
-    startuser = 0
+    startuser = FIRST_BITCOINTALK_USER
     try:
         jsonfile = open(filepath, 'r')
         # Loads the json file and takes last key of the loaded dictionary
         if jsonfile:
-            users = load(jsonfile)
-            startuser = int(list(users.keys())[-1]) + 1
-            if not users[str(startuser-1)]:
-                del users[str(startuser-1)]
+            if stat(jsonfile.name).st_size != 0:
+                users = load(jsonfile)
+                startuser = int(list(users.keys())[-1]) + 1
+                if not users[str(startuser-1)]:
+                    del users[str(startuser-1)]
 
         jsonfile.close()
     except IOError:
-        startuser = FIRST_BITCOINTALK_USER
+        pass
 
     return users, startuser
 

@@ -8,7 +8,7 @@ from bitcoinbech32addressvalidator import bech32_verify_checksum
 __all__ = [
     "BITCOIN", "ETHEREUM", "BITCOIN_CASH", "LITECOIN",
     "DOGECOIN", "DASH", "BITCOIN_SV", "BINANCE_COIN", "MAKER",
-    "MONERO", "EOS"
+    "MONERO", "EOS", "findalladdresses"
 ]
 
 _BITCOIN_REGEX = r'(?<=\b)[13][1-9A-HJ-NP-Za-km-z]{25,34}'
