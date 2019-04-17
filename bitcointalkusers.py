@@ -24,8 +24,7 @@ def main():
 
 
 def datatojson(url, jsonfile, users, u):
-    html = gethtml(url + str(u))
-    page = etree.HTML(html)
+
 
     # This function permits to restart the program from the last checked user and not last user with some data
     def addlastcheckeduser(data):
