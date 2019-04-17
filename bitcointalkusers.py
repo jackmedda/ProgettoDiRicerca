@@ -1,4 +1,4 @@
-from urllib.request import urlopen, Request
+from webutils import gethtml
 from lxml import etree
 from time import sleep
 from json import dump, load
@@ -8,10 +8,10 @@ from addrfilter import findalladdresses
 FIRST_BITCOINTALK_USER = 1
 LAST_BITCOINTALK_USER_21_03_2019_17_00_00 = 2566477
 
+_url = "https://bitcointalk.org/index.php?action=profile;u="
+
 
 def main():
-    url = "https://bitcointalk.org/index.php?action=profile;u="
-
     filepath = "BitcoinTalkUsers.json"
     users, startuser = load_data(filepath)
 
@@ -19,7 +19,8 @@ def main():
         if users:
             dump(users, jsonfile, indent=4)
         for u in range(startuser, LAST_BITCOINTALK_USER_21_03_2019_17_00_00):
-            datatojson(url, jsonfile, users, u)
+            datatojson(_url, jsonfile, users, u)
+            sleep(1)
 
 
 def datatojson(url, jsonfile, users, u):
@@ -44,31 +45,10 @@ def datatojson(url, jsonfile, users, u):
             result.update(addresses)
             # print(result)
             addlastcheckeduser(result)
-            jsonfile.seek(0, 0)
-            dump(users, jsonfile, indent=4)
         else:
             addlastcheckeduser([])
     else:
         addlastcheckeduser([])
-
-    sleep(1)
-
-
-def finddatabyuserid(user):
-    url = "https://bitcointalk.org/index.php?action=profile;u="
-    html = gethtml(url + str(user))
-    page = etree.HTML(html)
-
-    if not isemptypage(page):
-        result = getfeatures(page)
-        print(result)
-        # join concatenate all strings of the values of the dictionary 'result'
-        addresses = tupleset_to_dict(findalladdresses(' '.join(result.values())))
-        print(addresses)
-        # Users with no addresses are not useful
-        if result and addresses:
-            result.update(addresses)
-            print(result)
 
 
 def getfeatures(page):
@@ -122,21 +102,16 @@ def getfeatures(page):
 
 
 def getuserfeature(user):
-    url = "https://bitcointalk.org/index.php?action=profile;u="
-    return getfeatures(etree.HTML(gethtml(url + str(user))))
+    page = etree.HTML(gethtml(_url + str(user)))
+    if not isemptypage(page):
+        return getfeatures(page)
+    else:
+        print("Empty profile")
+        return None
 
 
-def gethtml(url):
-    #  Bitcoin Talk wants User-Agent to work properly
-    req = Request(url=url, headers={
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
-                      'Chrome/70.0.3538.77 Safari/537.36'})
-    resource = urlopen(req)
-
-    content = resource.read().decode(resource.headers.get_content_charset())
-    resource.close()
-
-    return content
+def getfeatureaddresses(feature):
+    return tupleset_to_dict(findalladdresses(' '.join(feature.values())))
 
 
 def isemptypage(page):
