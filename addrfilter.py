@@ -3,6 +3,7 @@ from enum import Enum
 from itertools import zip_longest
 from bitcoinaddressvalidator import check_bc
 from bitcoinbech32addressvalidator import bech32_verify_checksum
+from eth_utils import is_address
 
 
 __all__ = [
@@ -40,7 +41,8 @@ res = [
 ]
 
 validators = [
-    [check_bc, bech32_verify_checksum]
+    [check_bc, bech32_verify_checksum],
+    is_address
 ]
 
 
@@ -87,7 +89,7 @@ def extractaddress(s, regex, validator):
             newuseraddrs.add((regex[1], addr))
 
     # Check if the addresses are valid with respective validators
-    if validator:
+    if newuseraddrs and validator:
         _newuseraddrs = newuseraddrs.copy()
         for addr in _newuseraddrs:
             addr = addr[1]

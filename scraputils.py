@@ -16,7 +16,13 @@ def gethtml(url):
     return content
 
 
-def load_data(filepath):
+def load_data(filepath, offset):
+    """
+
+    :param filepath:
+    :param offset: the pages work by means of an integer offset (e.g. user_id --> +1, page_results --> +50)
+    :return:
+    """
     data = {}
     startindex = 0
     try:
@@ -25,9 +31,9 @@ def load_data(filepath):
         if jsonfile:
             if stat(jsonfile.name).st_size != 0:
                 data = load(jsonfile)
-                startindex = int(list(data.keys())[-1]) + 1
-                if not data[str(startindex-1)]:
-                    del data[str(startindex-1)]
+                startindex = int(list(data.keys())[-1]) + offset
+                if not data[str(startindex-offset)]:
+                    del data[str(startindex-offset)]
 
         jsonfile.close()
     except IOError:

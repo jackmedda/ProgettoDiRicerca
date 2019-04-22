@@ -16,7 +16,7 @@ _url = {
 def main():
     for file, url in _url.items():
         filepath = file + ".json"
-        data, startoffset = scraputils.load_data(filepath)
+        data, startoffset = scraputils.load_data(filepath, 50)
 
         # from first page it's possible to get the endoffset
         html = scraputils.gethtml(url + "0")
@@ -26,7 +26,7 @@ def main():
         with open(filepath, "w+") as jsonfile:
             if data:
                 dump(data, jsonfile, indent=4)
-            for u in range(startoffset, endoffset, 50):
+            for u in range(startoffset, endoffset + 1, 50):
                 html = scraputils.gethtml(url + str(u))
                 page = etree.HTML(html)
 
