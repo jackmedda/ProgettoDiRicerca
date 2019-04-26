@@ -10,10 +10,10 @@ _url = "https://bitcointalk.org/index.php?action=profile;u="
 
 
 def main():
-    filepath = "BitcoinTalkUsers.json"
-    users, startuser = scraputils.load_data(filepath, 1)
+    filename = "BitcoinTalkUsers.json"
+    users, startuser = scraputils.load_data(filename, 1)
 
-    with open(filepath, "w+") as jsonfile:
+    with open(filename, "w+") as jsonfile:
         if users:
             dump(users, jsonfile, indent=4)
         for u in range(startuser, LAST_BITCOINTALK_USER_21_03_2019_17_00_00 + 1):

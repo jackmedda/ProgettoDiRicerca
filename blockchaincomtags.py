@@ -15,15 +15,15 @@ _url = {
 
 def main():
     for file, url in _url.items():
-        filepath = file + ".json"
-        data, startoffset = scraputils.load_data(filepath, 50)
+        filename = file + ".json"
+        data, startoffset = scraputils.load_data(filename, 50)
 
         # from first page it's possible to get the endoffset
         html = scraputils.gethtml(url + "0")
         page = etree.HTML(html)
         endoffset = int(page.find("body/div/div/ul/li[last()-1]/a").values()[0].split('=')[2])
 
-        with open(filepath, "w+") as jsonfile:
+        with open(filename, "w+") as jsonfile:
             if data:
                 dump(data, jsonfile, indent=4)
             for u in range(startoffset, endoffset + 1, 50):
