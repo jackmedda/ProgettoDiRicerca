@@ -2,7 +2,7 @@ import re
 from enum import Enum
 from itertools import zip_longest
 from bitcoinaddressvalidator import check_bc
-from bitcoinbech32addressvalidator import bech32_verify_checksum
+from bitcoinbech32addressvalidator import bech32_verify
 from eth_utils import is_address
 
 
@@ -41,7 +41,7 @@ res = [
 ]
 
 validators = [
-    [check_bc, bech32_verify_checksum],
+    [check_bc, bech32_verify],
     is_address
 ]
 

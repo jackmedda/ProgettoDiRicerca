@@ -121,3 +121,8 @@ def encode(hrp, witver, witprog):
     if decode(hrp, ret) == (None, None):
         return None
     return ret
+
+
+# Function created by Giacomo Medda
+def bech32_verify(bech):
+    return True if bech32_decode(bech) != (None, None) else False
