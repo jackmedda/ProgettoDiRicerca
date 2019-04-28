@@ -96,7 +96,6 @@ def extractaddress(s, regex):
             if addr[0] in validators:
                 validator = validators[addr[0]]
                 addr = addr[1]
-                print(validator, addr)
                 if type(regex[0]) == list:
                     for r, v in zip_longest(regex[0], validator):
                         if r.match(addr):
