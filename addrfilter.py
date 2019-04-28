@@ -40,10 +40,13 @@ res = [
     (re.compile(_EOS_REGEX), "EOS address")
 ]
 
-validators = [
-    [check_bc, bech32_verify],
-    is_address
-]
+validators = {
+    "Bitcoin address": [check_bc, bech32_verify],
+    "Ethereum address": is_address,
+    "Maker address": is_address,
+    "BinanceCoin address": is_address,
+    "EOS address": is_address
+}
 
 
 class _Address(Enum):
@@ -61,20 +64,19 @@ globals().update(_Address.__members__)
 
 def findaddressesbytype(s, address_type):
     regex = res[address_type.value]
-    validator = validators[address_type.value]
 
-    return extractaddress(s, regex, validator)
+    return extractaddress(s, regex)
 
 
 def findalladdresses(s):
     useraddrs = set()
-    for regex, validator in zip_longest(res, validators):
-        useraddrs.update(extractaddress(s, regex, validator))
+    for regex in res:
+        useraddrs.update(extractaddress(s, regex))
 
     return useraddrs
 
 
-def extractaddress(s, regex, validator):
+def extractaddress(s, regex):
     newuseraddrs = set()
     addrs = []
 
@@ -88,18 +90,20 @@ def extractaddress(s, regex, validator):
         if addr:
             newuseraddrs.add((regex[1], addr))
 
-    # Check if the addresses are valid with respective validators
-    if newuseraddrs and validator:
+    if newuseraddrs:
         _newuseraddrs = newuseraddrs.copy()
         for addr in _newuseraddrs:
-            addr = addr[1]
-            if type(regex[0]) == list:
-                for r, v in zip_longest(regex[0], validator):
-                    if r.match(addr):
-                        if not v(addr):
-                            newuseraddrs.remove((regex[1], addr))
-            else:
-                if not validator(addr):
-                    newuseraddrs.remove((regex[1], addr))
+            if addr[0] in validators:
+                validator = validators[addr[0]]
+                addr = addr[1]
+                print(validator, addr)
+                if type(regex[0]) == list:
+                    for r, v in zip_longest(regex[0], validator):
+                        if r.match(addr):
+                            if not v(addr):
+                                newuseraddrs.remove((regex[1], addr))
+                else:
+                    if not validator(addr):
+                        newuseraddrs.remove((regex[1], addr))
 
     return newuseraddrs
