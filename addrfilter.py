@@ -16,7 +16,7 @@ _BITCOIN_REGEX = r'(?<=\b)[13][1-9A-HJ-NP-Za-km-z]{25,34}'
 _BITCOIN_BECH32_REGEX = r'(?<=\b)bc1[02-9ac-hj-np-z]{6,87}'
 _ETHEREUM_REGEX = r'(?<=\b)0x[0-9a-fA-F]{40}'
 _BITCOIN_CASH_REGEX = r'(?<=\b)([qp][02-9ac-hj-np-z]{60,104}|[qp][02-9AC-HJ-NP-Z]{60,104})'  # Legacy addresses are the same as Bitcoin, Lower case is preferred for cashaddr, but uppercase is accepted. A mixture of lower case and uppercase must be rejected.
-_LITECOIN_REGEX = r'(?<=\b)[ML][1-9A-HJ-NP-Za-km-z]{25,34}'
+_LITECOIN_REGEX = r'(?<=\b)[ML][1-9A-HJ-NP-Za-km-z]{25,34}'  # also addresses starting with 3, same as Bitcoin
 _LITECOIN_BECH32_REGEX = r'(?<=\b)ltc1[02-9ac-hj-np-z]{6,86}'
 _DOGECOIN_REGEX = r'(?<=\b)D[1-9A-HJ-NP-Za-km-z]{25,34}'  # Dogecoin addresses regex is the same as DeepOnion addresses regex
 _DASH_REGEX = r'(?<=\b)X[1-9A-HJ-NP-Za-km-z]{25,34}'
