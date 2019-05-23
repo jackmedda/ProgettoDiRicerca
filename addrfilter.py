@@ -21,10 +21,7 @@ _LITECOIN_BECH32_REGEX = r'(?<=\b)ltc1[02-9ac-hj-np-z]{6,86}'
 _DOGECOIN_REGEX = r'(?<=\b)D[1-9A-HJ-NP-Za-km-z]{25,34}'  # Dogecoin addresses regex is the same as DeepOnion addresses regex
 _DASH_REGEX = r'(?<=\b)X[1-9A-HJ-NP-Za-km-z]{25,34}'
 _BITCOIN_SV_REGEX = r'(?<=\b)([qp][02-9ac-hj-np-z]{60,104}|[qp][02-9AC-HJ-NP-Z]{60,104})'  # equal to Bitcoin Cash
-_BINANCE_COIN_REGEX = r'(?<=\b)0x[0-9a-fA-F]{40}'  # same as Ethereum address
-_MAKER_REGEX = r'(?<=\b)0x[0-9a-fA-F]{40}'  # same as Ethereum address
 _MONERO_REGEX = r'(?<=\b)4[1-9A-HJ-NP-Za-km-z]{94}'
-_EOS_REGEX = r'(?<=\b)0x[0-9a-fA-F]{40}'  # same as Ethereum address
 
 res = [
     ([re.compile(_BITCOIN_REGEX), re.compile(_BITCOIN_BECH32_REGEX)], "Bitcoin address"),
@@ -34,18 +31,12 @@ res = [
     (re.compile(_DOGECOIN_REGEX), "Dogecoin address"),
     (re.compile(_DASH_REGEX), "Dash address"),
     (re.compile(_BITCOIN_SV_REGEX), "BitcoinSV address"),
-    (re.compile(_BINANCE_COIN_REGEX), "BinanceCoin address"),
-    (re.compile(_MAKER_REGEX), "Maker address"),
-    (re.compile(_MONERO_REGEX), "Monero address"),
-    (re.compile(_EOS_REGEX), "EOS address")
+    (re.compile(_MONERO_REGEX), "Monero address")
 ]
 
 validators = {
     "Bitcoin address": [check_bc, bech32_verify],
-    "Ethereum address": is_address,
-    "Maker address": is_address,
-    "BinanceCoin address": is_address,
-    "EOS address": is_address
+    "Ethereum address": is_address
 }
 
 
