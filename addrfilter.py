@@ -8,8 +8,8 @@ from eth_utils import is_address
 
 __all__ = [
     "BITCOIN", "ETHEREUM", "BITCOIN_CASH", "LITECOIN",
-    "DOGECOIN", "DASH", "BITCOIN_SV", "BINANCE_COIN", "MAKER",
-    "MONERO", "EOS", "findalladdresses"
+    "DOGECOIN", "DASH", "BITCOIN_SV", "MONERO",
+    "findalladdresses", "findaddressesbytype"
 ]
 
 _BITCOIN_REGEX = r'(?<=\b)[13][1-9A-HJ-NP-Za-km-z]{25,34}'
@@ -48,26 +48,25 @@ class _Address(Enum):
     DOGECOIN = 4
     DASH = 5
     BITCOIN_SV = 6
-    BINANCE_COIN = 7
-    MAKER = 8
+    MONERO = 7
 globals().update(_Address.__members__)
 
 
 def findaddressesbytype(s, address_type):
     regex = res[address_type.value]
 
-    return extractaddress(s, regex)
+    return _extractaddress(s, regex)
 
 
 def findalladdresses(s):
     useraddrs = set()
     for regex in res:
-        useraddrs.update(extractaddress(s, regex))
+        useraddrs.update(_extractaddress(s, regex))
 
     return useraddrs
 
 
-def extractaddress(s, regex):
+def _extractaddress(s, regex):
     newuseraddrs = set()
     addrs = []
 
