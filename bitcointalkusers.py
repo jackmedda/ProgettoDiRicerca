@@ -22,7 +22,7 @@ def main():
 
             datatojson(page, jsonfile, users, u)
 
-            sleep(1)
+            sleep(0.25)
 
 
 def datatojson(page, jsonfile, users, u):
@@ -46,9 +46,9 @@ def datatojson(page, jsonfile, users, u):
             # print(result)
             addlastcheckeduser(result)
         else:
-            addlastcheckeduser([])
+            addlastcheckeduser({})
     else:
-        addlastcheckeduser([])
+        addlastcheckeduser({})
 
 
 def getfeatures(page):
