@@ -22,8 +22,9 @@ def datatojson(page, jsonfile):
 
     dump(data, jsonfile, indent=4)
 
+
 def getcommentsdata(page):
-    data = {}
+    data = []
 
     commentlist = page.find('body/div/div[@id="main"]/div[@id="primary"]/div/div[@id="comments"]/ol')
 
@@ -50,19 +51,11 @@ def getcommentsdata(page):
 
             commentdata["Comment"] = contenttext
 
+            commentdata["Addresses"] = []
             for addr in addrs:
-                commentdata["Type"] = addr[0]
-                # Some users commented multiple times, multiple names are labelled with 'Name' + i
-                i = 2
-                while "Name" + str(i) in addr[1]:
-                    i += 1
-                if addr[1] in data:
-                    if data[addr[1]]["Name"] != commentdata["Name"]:
-                        data[addr[1]]["Name" + str(i)] = commentdata["Name"]
-                    data[addr[1]]["Comment" + str(i)] = commentdata["Comment"]
-                else:
-                    data[addr[1]] = commentdata
-
+                addrdata = {"Type": addr[0], "Address": addr[1]}
+                commentdata["Addresses"].append(addrdata)
+            data.append(commentdata)
     return data
 
 
