@@ -16,6 +16,7 @@ def gethtml(url):
     return content
 
 
+# Actually works just for BitcoinTalk
 def load_data(filepath, offset):
     """
 
@@ -23,7 +24,7 @@ def load_data(filepath, offset):
     :param offset: the pages work by means of an integer offset (e.g. user_id --> +1, page_results --> +50)
     :return:
     """
-    data = {}
+    data = []
     startindex = 0
     try:
         jsonfile = open(filepath, 'r')
@@ -31,9 +32,11 @@ def load_data(filepath, offset):
         if jsonfile:
             if stat(jsonfile.name).st_size != 0:
                 data = load(jsonfile)
-                startindex = int(list(data.keys())[-1]) + offset
-                if not data[str(startindex-offset)]:
-                    del data[str(startindex-offset)]
+                startindex = int(data[-1]["BitcoinTalkID"]) + offset
+                # startindex = int(list(data.keys())[-1]) + offset
+                if "Name" not in data[-1]:
+                    del data[-1]
+
 
         jsonfile.close()
     except IOError:
@@ -42,8 +45,15 @@ def load_data(filepath, offset):
     return data, startindex
 
 
-def tupleset_to_dict(addresses):
+def tupleset_to_dict_of_sets(addresses):
     result = {}
     for x in addresses:
-        result[x[0]] = x[1]
+        if x[0] in result:
+            result[x[0]].add(x[1])
+        else:
+            result[x[0]] = {x[1]}
+
+    for r in result:
+        result[r] = list(result[r])
+
     return result

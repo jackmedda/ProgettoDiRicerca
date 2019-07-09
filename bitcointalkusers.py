@@ -29,20 +29,23 @@ def datatojson(page, jsonfile, users, u):
 
     # This function permits to restart the program from the last checked user and not last user with some data
     def addlastcheckeduser(data):
-        if str(u - 1) in users:
-            if not users[str(u - 1)]:
-                del users[str(u - 1)]
-        users[str(u)] = data
+        if users:
+            if str(u - 1) == users[-1]["BitcoinTalkID"]:
+                if "Name" not in users[-1]:
+                    del users[-1]
+        data.update({"BitcoinTalkID": str(u), "Source": "BitcoinTalk"})
+        users.append(data)
         jsonfile.seek(0, 0)
         dump(users, jsonfile, indent=4)
 
     if not isemptypage(page):
         result = getfeatures(page)
         # join concatenate all strings of the values of the dictionary 'result'
-        addresses = scraputils.tupleset_to_dict(findalladdresses(' '.join(result.values())))
+        addresses = scraputils.tupleset_to_dict_of_sets(findalladdresses(' '.join(result.values())))
         # Users with no addresses are not useful
         if result and addresses:
             result.update(addresses)
+            print(result)
             # print(result)
             addlastcheckeduser(result)
         else:
@@ -60,13 +63,13 @@ def getfeatures(page):
     :return: an associative array containing the information that is useful for a particular purpose
     """
     result = {}
-    # <b> tags to not consider
-    b_toskip = [
-        'Guest', 'News', 'Posts: ', 'Activity:', 'Position: ', 'Date Registered: ',
-        'Last Active: ', 'Current Status: ', 'Gender: ', 'Age:', 'Local Time:'
+    # <b> tags to consider
+    b_tochoose = [
+        'Name: ', 'Website: ', 'Bitcoin Address: ', 'Location:', 'Signature:', 'Skype: ',
+        'Other contact info: ', 'Email: '
     ]
     for b in page.iter('b'):
-        if b.text is not None and b.text not in b_toskip:
+        if b.text is not None and b.text in b_tochoose:
             if b.text == "Email: ":
                 email = b.getparent().getnext().getchildren()[0].text
                 if email != "hidden":
@@ -111,7 +114,7 @@ def getuserfeature(user):
 
 
 def getfeatureaddresses(feature):
-    return scraputils.tupleset_to_dict(findalladdresses(' '.join(feature.values())))
+    return scraputils.tupleset_to_dict_of_sets(findalladdresses(' '.join(feature.values())))
 
 
 def isemptypage(page):
