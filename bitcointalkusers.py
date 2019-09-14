@@ -22,7 +22,7 @@ def main():
 
             datatojson(page, jsonfile, users, u)
 
-            sleep(0.25)
+            sleep(0.3)
 
 
 def datatojson(page, jsonfile, users, u):
@@ -45,7 +45,6 @@ def datatojson(page, jsonfile, users, u):
         # Users with no addresses are not useful
         if result and addresses:
             result.update(addresses)
-            print(result)
             # print(result)
             addlastcheckeduser(result)
         else:
