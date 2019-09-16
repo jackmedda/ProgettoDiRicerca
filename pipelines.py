@@ -57,23 +57,18 @@ pipelines = [
 
     ],
     [
-        {"$unwind": {"path": "$data.Bitcoin address", "preserveNullAndEmptyArrays": True}},
-
-        {"$group": {"_id": {"Address": "$data.Bitcoin address"},
-                    "users": {"$addToSet": "$data.Name"},
-                    "sources": {"$addToSet": "$data.Source"}
+        {"$group": {"_id": {}
                     }},
 
         {"$project": {"_id": 0,
-                      "Bitcoin address": "$_id.Address",
-                      "users": 1,
-                      "sources": 1,
-                      "size users": {"$size": "$users"},
-                      "size sources": {"$size": "$sources"}
+                      "or": {"$or": []}
                       }},
 
         {"$sort": {}},
 
-        {"$project": {"size": 0}}
+        {"$match": {"or": {"$ne": False}}},
+
+        {"$project": {"or": 0
+        }}
     ]
 ]
