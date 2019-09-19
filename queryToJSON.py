@@ -66,16 +66,17 @@ def gui():
         [sg.Checkbox('Sources', disabled=True, key='size sources')]
     ]
 
-    tab1_layout = [[sg.Text('Deanonomity Addresses Query Selector', font=('Helvetica', 16))],
-                   [sg.Column(col1, size=(200, 380)),
-                    sg.VerticalSeparator(),
-                    sg.Column(col2),
-                    sg.VerticalSeparator(),
-                    sg.Column(col3)],
-                   [sg.Text('Preserve null and empty arrays of groups?', font=('Helvetica', 12)),
-                    sg.Checkbox('', key='preserve_null')],
-                   [sg.Text('Results are added to a set, then sorted in descending order and'
-                            ' with respect to order of checks of checkboxes', font=('Helvetica', 8))]
+    tab1_layout = [
+        [sg.Text('Deanonomity Addresses Query Selector', font=('Helvetica', 16))],
+        [sg.Column(col1, size=(200, 380)),
+         sg.VerticalSeparator(),
+         sg.Column(col2),
+         sg.VerticalSeparator(),
+         sg.Column(col3)],
+        [sg.Text('Preserve null and empty arrays of groups?', font=('Helvetica', 12)),
+         sg.Checkbox('', key='preserve_null')],
+        [sg.Text('Results are added to a set, then sorted in descending order and'
+                 ' with respect to order of checks of checkboxes', font=('Helvetica', 8))]
     ]
 
     tab2_col1 = [
@@ -116,20 +117,20 @@ def gui():
 
     cbox_order = []
 
-    def save_action(values, **kwargs):
+    def save_action(_values, **kwargs):
         """
         Takes the filename, adds ".json" at the end if not present
-        :param values: dictionary containing the values of the GUI
+        :param _values: dictionary containing the values of the GUI
         :param kwargs: args useful to process data with aggregation ('group by') query
         :return:
         """
-        filename = values["Save As..."]
+        filename = _values["Save As..."]
         if filename[-4:] != 'json':
             filename = filename + '.json'
         if values['Tab'] == 'Group by':
-            process_data(filename, values, **kwargs, preserve_null=values['preserve_null'])
+            process_data(filename, _values, **kwargs, preserve_null=values['preserve_null'])
         elif values['Tab'] == 'Find':
-            process_data(filename, values)
+            process_data(filename, _values)
 
     while True:
         event, values = window.Read()
@@ -250,10 +251,11 @@ def process_data(filename, values, **kwargs):
     Process data returned by the GUI
     :param filename: filename as the output of data
     :param values: values of the dict returned by GUI
-    :param cbox_order: array containing the sort order of fields
-    :param addrs_keys: array containing the fields of addresses
-    :param group_addr: array containing the fields of addresses by which data are grouped
-    :param preserve_null; a boolean to preserve Null or Empty arrays or not
+    :param kwargs:
+            cbox_order: array containing the sort order of fields
+            addrs_keys: array containing the fields of addresses
+            group_addr: array containing the fields of addresses by which data are grouped
+            preserve_null; a boolean to preserve Null or Empty arrays or not
     :return:
     """
     cbox_order = kwargs.get('cbox_order')
