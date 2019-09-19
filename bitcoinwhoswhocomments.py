@@ -8,7 +8,7 @@ _url = "https://bitcoinwhoswho.com/blog/2016/02/29/bitcoin-donation-address-rank
 
 
 def main():
-    filename = "bitcoinwhoswhocomcommentsaddresses.json"
+    filename = "bitcoinwhoswhocomcommentsaddresses2.json"
 
     with open(filename, "w+") as jsonfile:
         html = scraputils.gethtml(_url)
@@ -46,16 +46,23 @@ def getcommentsdata(page):
 
             # Retrieve addresses from plain html (so find addresses in both attributes and text)
             addrs = findalladdresses(etree.tostring(content, encoding=str, method="html"))
-            # Retrieve only the text without tags
-            contenttext = " ".join(etree.tostring(content, encoding=str, method="text").split())
 
-            commentdata["Comment"] = contenttext
+            if addrs.__len__() != 0:
+                # Retrieve only the text without tags
+                contenttext = " ".join(etree.tostring(content, encoding=str, method="text").split())
 
-            commentdata["Addresses"] = []
-            for addr in addrs:
-                addrdata = {"Type": addr[0], "Address": addr[1]}
-                commentdata["Addresses"].append(addrdata)
-            data.append(commentdata)
+                commentdata["Comment"] = contenttext
+
+                commentdata["Source"] = "BitcoinWhosWho: Comments"
+
+                for addr in addrs:
+                    if addr[0] in commentdata:
+                        commentdata[addr[0]].append(addr[1])
+                    else:
+                        commentdata[addr[0]] = [addr[1]]
+
+                data.append(commentdata)
+
     return data
 
 

@@ -4,6 +4,7 @@ from itertools import zip_longest
 from bitcoinaddressvalidator import check_bc
 from bitcoinbech32addressvalidator import bech32_verify
 from eth_utils import is_address
+import copy
 
 
 __all__ = [
@@ -81,7 +82,7 @@ def _extractaddress(s, regex):
             newuseraddrs.add((regex[1], addr))
 
     if newuseraddrs:
-        _newuseraddrs = newuseraddrs.copy()
+        _newuseraddrs = copy.deepcopy(newuseraddrs)
         for addr in _newuseraddrs:
             if addr[0] in validators:
                 validator = validators[addr[0]]
