@@ -1,3 +1,23 @@
+# This software is distributed under MIT/X11 license
+# Copyright (c) 2019 Giacomo Medda - University of Cagliari
+# Permission is hereby granted, free of charge, to any person
+# obtaining a copy of this software and associated documentation
+# files (the "Software"), to deal in the Software without
+# restriction, including without limitation the rights to use,
+# copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following
+# conditions:
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
 import re
 from enum import Enum
 from itertools import zip_longest
@@ -24,6 +44,7 @@ _DASH_REGEX = r'(?<=\b)X[1-9A-HJ-NP-Za-km-z]{25,34}'
 _BITCOIN_SV_REGEX = r'(?<=\b)([qp][02-9ac-hj-np-z]{60,104}|[qp][02-9AC-HJ-NP-Z]{60,104})'  # equal to Bitcoin Cash
 _MONERO_REGEX = r'(?<=\b)4[1-9A-HJ-NP-Za-km-z]{94}'
 
+# Array of compiled regexs
 res = [
     ([re.compile(_BITCOIN_REGEX), re.compile(_BITCOIN_BECH32_REGEX)], "Bitcoin address"),
     (re.compile(_ETHEREUM_REGEX), "Ethereum address"),
@@ -35,6 +56,7 @@ res = [
     (re.compile(_MONERO_REGEX), "Monero address")
 ]
 
+# Array of checksum validator
 validators = {
     "Bitcoin address": [check_bc, bech32_verify],
     "Ethereum address": is_address
@@ -42,6 +64,7 @@ validators = {
 
 
 class _Address(Enum):
+    """Contains the enumeration for mapping each value with a certain regex"""
     BITCOIN = 0
     ETHEREUM = 1
     BITCOIN_CASH = 2
@@ -54,12 +77,23 @@ globals().update(_Address.__members__)
 
 
 def findaddressesbytype(s, address_type):
+    """
+    Find all addresses of the type given as parameter
+    :param s: string from which addresses are extracted
+    :param address_type: type of address to be extracted. Types are in class _Address
+    :return: a set of tuples (Crypto Name, address)
+    """
     regex = res[address_type.value]
 
     return _extractaddress(s, regex)
 
 
 def findalladdresses(s):
+    """
+    Find all addresses using the regexs of crypto in the array "res"
+    :param s: string from which addresses are extracted
+    :return: a set of tuples (Crypto Name, address)
+    """
     useraddrs = set()
     for regex in res:
         useraddrs.update(_extractaddress(s, regex))
@@ -68,6 +102,12 @@ def findalladdresses(s):
 
 
 def _extractaddress(s, regex):
+    """
+    Extract addresses from a string using the regex passed as parameter
+    :param s: string from which addresses are extracted
+    :param regex: regular expression for a given crypto
+    :return: a set of tuples (Crypto Name, address)
+    """
     newuseraddrs = set()
     addrs = []
 

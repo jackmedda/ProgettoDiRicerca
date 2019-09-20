@@ -4,6 +4,11 @@ from os import stat
 
 
 def gethtml(url):
+    """
+    Function to get the html of a page given a url with the right charset
+    :param url: url (string) of the page
+    :return: html of the page
+    """
     #  Bitcoin Talk wants User-Agent to work properly
     req = Request(url=url, headers={
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
@@ -19,10 +24,12 @@ def gethtml(url):
 # Actually works just for BitcoinTalk
 def load_data(filepath, offset):
     """
-
+    Load data from the json of BitcoinTalkUsers.json
+    Before it worked also for crawl Blockchain.com, but it was needed to be modified because of some modifications
+    to BitcoinTalk crawling work. Anyway Blockchain.com crawling and scraping is a fast process
     :param filepath:
     :param offset: the pages work by means of an integer offset (e.g. user_id --> +1, page_results --> +50)
-    :return:
+    :return: loaded data and index from which position the code restart
     """
     data = []
     startindex = 0
@@ -37,7 +44,6 @@ def load_data(filepath, offset):
                 if "Name" not in data[-1]:
                     del data[-1]
 
-
         jsonfile.close()
     except IOError:
         pass
@@ -46,6 +52,12 @@ def load_data(filepath, offset):
 
 
 def tupleset_to_dict_of_sets(addresses):
+    """
+    Helper function first used to get a dictionary of sets from the tuple set returned by the functions
+    for finding addresses of addrfilter.py file
+    :param addresses: set of tuples with each entry as (Crypto Name, address)
+    :return: a dictionary of sets
+    """
     result = {}
     for x in addresses:
         if x[0] in result:

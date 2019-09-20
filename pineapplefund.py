@@ -5,6 +5,7 @@ from json import dump
 
 _url = "https://pineapplefund.org/"
 
+"""File that scrapes the necessary data from PineappleFund site page"""
 
 def main():
     filename = "pineapplefund.json"
@@ -40,7 +41,7 @@ def main():
                 entry["Transactions"].append(t[1:-1])
                 data[0]["Transactions"].append(t[1:-1])
 
-            entry["Bitcoin address"] = [""]
+            entry["Bitcoin address"] = [""]  # Bitcoin addresses could be inserted only by hand
             entry["Source"] = "Pineapple Fund"
             entry["Name"] = entry["Organization"]
 

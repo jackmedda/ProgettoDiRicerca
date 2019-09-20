@@ -1,3 +1,24 @@
+# This software is distributed under MIT/X11 license
+# Copyright (c) 2019 Giacomo Medda - University of Cagliari
+# Permission is hereby granted, free of charge, to any person
+# obtaining a copy of this software and associated documentation
+# files (the "Software"), to deal in the Software without
+# restriction, including without limitation the rights to use,
+# copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following
+# conditions:
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+
 import scraputils
 from lxml import etree
 from time import sleep
@@ -10,6 +31,10 @@ _url = "https://bitcointalk.org/index.php?action=profile;u="
 
 
 def main():
+    """
+    Loads the data from the json and continues to scrape data from the profile pages
+    :return:
+    """
     filename = "BitcoinTalkUsers.json"
     users, startuser = scraputils.load_data(filename, 1)
 
@@ -26,7 +51,15 @@ def main():
 
 
 def datatojson(page, jsonfile, users, u):
-
+    """
+    Dumps data as a json file if data has valid addresses and substitute data of previous user
+    if no significant data has been extracted
+    :param page: page to be scraped
+    :param jsonfile: path of json
+    :param users: dict containing all data of the json and updated for each new found data
+    :param u: current user id
+    :return:
+    """
     # This function permits to restart the program from the last checked user and not last user with some data
     def addlastcheckeduser(data):
         if users:
@@ -104,6 +137,11 @@ def getfeatures(page):
 
 
 def getuserfeature(user):
+    """
+    Get data related to a user given user id. Primarily a test function
+    :param user: user id (int)
+    :return: a dictionary with data of the user
+    """
     page = etree.HTML(scraputils.gethtml(_url + str(user)))
     if not isemptypage(page):
         return getfeatures(page)
@@ -113,10 +151,20 @@ def getuserfeature(user):
 
 
 def getfeatureaddresses(feature):
+    """
+    Get the addresses from a dictionary of features
+    :param feature: dict of features
+    :return: a dict of sets containing the addresses
+    """
     return scraputils.tupleset_to_dict_of_sets(findalladdresses(' '.join(feature.values())))
 
 
 def isemptypage(page):
+    """
+    Check if a user profile page is empty
+    :param page: page to be checked
+    :return: True if page is empty
+    """
     emptyuser = page.find("body//tr[@class='titlebg']/td")
     return emptyuser is not None and emptyuser.text == "An Error Has Occurred!"
 
