@@ -97,7 +97,7 @@ def getfeatures(page):
     result = {}
     # <b> tags to consider
     b_tochoose = [
-        'Name: ', 'Website: ', 'Bitcoin Address: ', 'Location:', 'Signature:', 'Skype: ',
+        'Name: ', 'Website: ', 'Bitcoin address: ', 'Location:', 'Signature:', 'Skype: ',
         'Other contact info: ', 'Email: '
     ]
     for b in page.iter('b'):
@@ -129,6 +129,7 @@ def getfeatures(page):
                     result["Website"] = (td.text if td.text else "") + " " + website
             else:
                 td = b.getparent().getnext()
+                print(td.text)
                 if td is not None:  # just td raise a FutureWarning, leave td is not None
                     if td.text:
                         result[b.text.split(':')[0]] = td.text

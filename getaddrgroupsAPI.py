@@ -71,11 +71,13 @@ for gr in groups:
 
     group_data = []
     for res in doc:
+        addr_data = []
         for addrs in res:
             for addr in res[addrs]:
                 response = requests.get(base_api + addrs.split(' ')[0].lower() + api_path_address + addr)
-                group_data.append(response.json())
+                addr_data.append(response.json())
                 sleep(2)
+        group_data.append(addr_data)
     data.append(group_data)
 
 with open("blockdata.json", "w") as f:
